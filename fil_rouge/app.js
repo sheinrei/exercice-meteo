@@ -1,9 +1,11 @@
 const key = "c8a4e675fa901dc728e553a943ff7d88";
 let city_array = ["London", "Paris", "Toulouse"];
 
+const string = JSON.stringify(city_array);
+const parse = JSON.parse(localStorage.getItem("city"));
 
-JSON.stringify(city_array)
-localStorage.setItem("city", city_array)
+localStorage.setItem("city", string);
+
 
 async function geocoding(city) {
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${key}`
@@ -90,7 +92,9 @@ const input_city = document.getElementById("input_city");
 submit.addEventListener("click",async function(){
     // desinguer tout le dom en suprimant -> add le tableau de l'input -> repasser le setDom()
     city_array.unshift(input_city.value);
-    localStorage.setItem("city", JSON.stringify(city_array))
+    localStorage.clear()
+    localStorage.setItem("city", JSON.stringify(city_array));
+    
       
 })
 
