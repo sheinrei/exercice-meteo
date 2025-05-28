@@ -1,10 +1,6 @@
 const key = "c8a4e675fa901dc728e553a943ff7d88";
-let city_array = ["London", "Paris", "Toulouse"];
 
-const parse = JSON.parse(localStorage.getItem("city"));
-
-
-
+const city_array = ["London"]
 
 
 async function geocoding(city) {
@@ -44,57 +40,44 @@ async function meteoData(emplacement) {
     return cached_data
 }
 
-async function setDom() {
+async function setDom(element) {
 
-    for (i = 0; i < parse.length; i++) {
+    const d = await meteoData(element)
 
-        const data_city = await meteoData(parse[i])
+    const create_html = document.createElement("div");
+    create_html.className = "container_meteo";
 
-        const t_min = data_city.temp_min;
-        const t_max = data_city.temp_max;
-        const weather = data_city.weather;
-        const humidity = data_city.humidity;
-        
-        const create_html = document.createElement("div");
-        create_html.className = "container_meteo";
-        
-        create_html.innerHTML = `
+    create_html.innerHTML = `
         <div class="container_meteo_city">   
 
-            <div id="name_city_${i}" class="name_city">${parse[i]}</div>
+            <div id="name_city_${element}" class="name_city">${element}</div>
             
             <div class="meteo_city">
                 <div class="container_temperature">
-                    <p id="temperature_min_city_${i}">Minimum : ${t_min}</p>
-                    <p id="temperature_max_city_${i}" class="temperature_max_city">Maximum : ${t_max}</p>
+                    <p id="temperature_min_city_${element}">Minimum : ${d.temp_min}</p>
+                    <p id="temperature_max_city_${element}" class="temperature_max_city">Maximum : ${d.temp_max}</p>
                 </div>
 
                 <div class="container_weather">
-                    <p id="weather_description_city_${i}">${weather}</p>
-                    <p id="humidity_city_${i}">Humidité : ${humidity}</p>
+                    <p id="weather_description_city_${element}">${d.weather}</p>
+                    <p id="humidity_city_${element}">Humidité : ${d.humidity}</p>
                 </div>
                 
             </div>
         </div>`
 
-        let element = document.getElementById("container_meteo_city");
+    let new_div = document.getElementById("container_meteo_city");
+    new_div.parentNode.append(create_html);
 
-        element.parentNode.append(create_html);
 
-
-    }
 }
 
+document.getElementById("submit").addEventListener("click", async function () {
 
-const submit = document.getElementById("submit");
-const input_city = document.getElementById("input_city");
-
-submit.addEventListener("click", async function () {
-
-    city_array.unshift(input_city.value);
-    localStorage.clear()
+    const input = document.getElementById("input_city").value
+    city_array.unshift(input);
     localStorage.setItem("city", JSON.stringify(city_array));
-    location.reload()
+    setDom(input_city.value)
 
 })
 
@@ -103,4 +86,17 @@ const convertCelsus = (number) => (number - 273).toFixed(1) + "°C"
 
 
 // Init function
-setDom()
+
+
+const parse = JSON.parse(localStorage.getItem("city"));
+
+if (!parse) {
+    localStorage.setItem("city", JSON.stringify(city_array))
+    setDom("London");
+} else {
+    for (let i = 0; i < parse.length; i++) {
+        setDom(parse[i])
+    }
+}
+
+
