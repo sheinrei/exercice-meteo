@@ -2,6 +2,9 @@ const key = "c8a4e675fa901dc728e553a943ff7d88";
 
 const city_array = ["London"]
 
+const firstUppercase = (string) => string[0].toUpperCase() + string.slice(1)
+const convertCelsus = (number) => (number - 273).toFixed(1) + "°C"
+
 
 async function geocoding(city) {
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${key}`
@@ -50,7 +53,7 @@ async function setDom(element) {
     create_html.innerHTML = `
         <div class="container_meteo_city">   
 
-            <div id="name_city_${element}" class="name_city">${element}</div>
+            <div id="name_city_${element}" class="name_city">${firstUppercase(element)}</div>
             
             <div class="meteo_city">
                 <div class="container_temperature">
@@ -74,28 +77,35 @@ async function setDom(element) {
 
 document.getElementById("submit").addEventListener("click", async function () {
 
-    const input = document.getElementById("input_city").value
-    city_array.unshift(input);
-    localStorage.setItem("city", JSON.stringify(city_array));
-    setDom(input_city.value)
+    const input = document.getElementById("input_city").value; //ok recup value de l'input
 
+
+    const local_array = JSON.parse(localStorage.getItem("city")) //duplique un new array
+
+    local_array.unshift(firstUppercase(input));//ajoute l'input dans le new array
+    console.log(local_array)
+    localStorage.clear()// clear tout pour remettre dans un seul array
+    localStorage.setItem("city", JSON.stringify(local_array))// set le new localStorage
+
+    setDom(input_city.value);// ok rajoute la new div 
+    document.getElementById("input_city").value = ""//ok clear l'input
 })
 
-const convertCelsus = (number) => (number - 273).toFixed(1) + "°C"
+
 
 
 
 // Init function
 
 
-const parse = JSON.parse(localStorage.getItem("city"));
+const local_storage = JSON.parse(localStorage.getItem("city"));
 
-if (!parse) {
+if (!local_storage) {
     localStorage.setItem("city", JSON.stringify(city_array))
     setDom("London");
 } else {
-    for (let i = 0; i < parse.length; i++) {
-        setDom(parse[i])
+    for (let i = 0; i < local_storage.length; i++) {
+        setDom(local_storage[i])
     }
 }
 
