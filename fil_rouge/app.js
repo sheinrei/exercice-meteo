@@ -1,10 +1,10 @@
 const key = "c8a4e675fa901dc728e553a943ff7d88";
 let city_array = ["London", "Paris", "Toulouse"];
 
-const string = JSON.stringify(city_array);
 const parse = JSON.parse(localStorage.getItem("city"));
 
-localStorage.setItem("city", string);
+
+
 
 
 async function geocoding(city) {
@@ -46,22 +46,22 @@ async function meteoData(emplacement) {
 
 async function setDom() {
 
-    for (i = 0; i < city_array.length; i++) {
+    for (i = 0; i < parse.length; i++) {
 
-        const data_city = await meteoData(city_array[i])
+        const data_city = await meteoData(parse[i])
 
         const t_min = data_city.temp_min;
         const t_max = data_city.temp_max;
         const weather = data_city.weather;
         const humidity = data_city.humidity;
-
+        
         const create_html = document.createElement("div");
         create_html.className = "container_meteo";
-
+        
         create_html.innerHTML = `
         <div class="container_meteo_city">   
 
-            <div id="name_city_${i}" class="name_city">${city_array[i]}</div>
+            <div id="name_city_${i}" class="name_city">${parse[i]}</div>
             
             <div class="meteo_city">
                 <div class="container_temperature">
@@ -80,7 +80,7 @@ async function setDom() {
         let element = document.getElementById("container_meteo_city");
 
         element.parentNode.append(create_html);
-       
+
 
     }
 }
@@ -89,13 +89,13 @@ async function setDom() {
 const submit = document.getElementById("submit");
 const input_city = document.getElementById("input_city");
 
-submit.addEventListener("click",async function(){
-    // desinguer tout le dom en suprimant -> add le tableau de l'input -> repasser le setDom()
+submit.addEventListener("click", async function () {
+
     city_array.unshift(input_city.value);
     localStorage.clear()
     localStorage.setItem("city", JSON.stringify(city_array));
-    
-      
+    location.reload()
+
 })
 
 const convertCelsus = (number) => (number - 273).toFixed(1) + "°C"
